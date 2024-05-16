@@ -62,10 +62,19 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/myPosts/:email', async (req, res) => {
+      const x = req.params.email;
+      var query = { email: x }
+      const cursor = collection.find(query);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+
     app.get('/applyPosts/:email', async (req, res) => {
       const x = req.params.email;
       var query = { vemail: x }
-      const cursor = collection.find(query);
+      const cursor = collection2.find(query);
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -124,27 +133,28 @@ async function run() {
       
     })
 
+    app.delete('/post/:id', async(req, res)=>{
+      const id = req.params.id;
+      console.log("going to delete the ", id);
+      const objectId = new ObjectId(id);
 
-    // app.patch('/incrementField/:id', async (req, res) => {
-    //   const id = req.params.id;
-    //   const { field, amount } = req.body;
-    //   const objectId = new ObjectId(id);
-    //   console.log(field, amount)
-      
-    //   const updateResult = await collection.updateOne(
-    //     { _id: objectId },
-    //     { $inc: { field: amount } }
-    //   );
-    //   console.log(updateResult)
+      const query = {_id:objectId}
+      const result = await collection2.deleteOne(query);
+      res.send(result);
+    })
 
-    //   if (updateResult.modifiedCount === 1) {
-    //     res.send({ message: 'Successfully updated the field value.' });
-    //   } else {
-    //     res.status(404).send({ message: 'Document not found or no changes made.' });
-    //   }
-    // });
-    // Send a ping to confirm a successful connection
+    app.delete('/allVolPost/:id', async(req, res)=>{
+      const id = req.params.id;
+      console.log("going to delete the ", id);
+      const objectId = new ObjectId(id);
 
+      const query = {_id:objectId}
+      const result = await collection.deleteOne(query);
+      res.send(result);
+    })
+
+
+    
   } finally {
     // await client.close();
   }

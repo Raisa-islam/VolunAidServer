@@ -10,7 +10,9 @@ const port = process.env.PORT || 5001;
 //middlewares
 app.use(cors({
   origin:[
-    'http://localhost:5173'
+    //'http://localhost:5173'
+    'https://volunteermanagement-7ef6d.firebaseapp.com',
+    'https://volunteermanagement-7ef6d.web.app'
   ],
   credentials:true
 }));

@@ -117,8 +117,11 @@ async function run() {
     })
 
 
-    app.get('/applyPosts/:email', async (req, res) => {
+    app.get('/applyPosts/:email', logger, verifyToken, async (req, res) => {
       const x = req.params.email;
+      if(req.user.email !== x){
+        return res.status(403).send({message: 'Forbidden Access'})
+      }
       var query = { vemail: x }
       const cursor = collection2.find(query);
       const result = await cursor.toArray()

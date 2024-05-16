@@ -23,19 +23,12 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    //await client.connect();
-    //await client.db("admin").command({ ping: 1 });
+   
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
     const database = client.db("b9a11");
     const collection = database.collection("volunteerPost");
     const collection2 = database.collection("applyPost")
-    //const collection2 = database.collection("category");
-    // app.get('/category', async (req, res)=>{
-    //   const cursor = collection2.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result)
-    // })
+    
     app.get('/addVolPost/:val', async (req, res) => {
       const x = req.params.val;
       var query;
@@ -78,21 +71,7 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
-    // app.get('/items/:id', async (req, res) => {
-    //   const id = req.params.id;
-    //   console.log('i need data for ', id);
-    //   // Convert string ID to MongoDB ObjectId
-    //   const objectId = new ObjectId(id);
-
-    //   // Que ary for the document with the specific ID
-    //   const result = await collection.findOne({ _id: objectId });
-    //   res.send(result);
-    // })
-
-
-
-
-
+    
     app.post('/addVolPost/All', async (req, res) => {
       const item = req.body;
       console.log('new item', item);

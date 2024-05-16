@@ -37,11 +37,13 @@ const verifyToken = (req, res, next)=>{
   const token = req?.cookies?.token;
  // console.log('token in middleware', token)
   if(!token){
-    return res.status(401).send({message: 'unauthorized access'})
+    console.log('no token')
+    return res.status(401).send({message: 'unauthorized access not token'})
   }
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded)=>{
     if(err){
-      return res.status(401).send({message: 'unauthorized access'})
+      console.log('verify e problem')
+      return res.status(401).send({message: 'unauthorized access from verified token'})
     }
     req.user = decoded;
     console.log(req.user)
@@ -50,7 +52,11 @@ const verifyToken = (req, res, next)=>{
   //next()
 }
 
-
+const cookie_option={
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none'
+}
 async function run() {
   try {
    
@@ -64,18 +70,14 @@ async function run() {
       const user = req.body;
       console.log('user', user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'})
-      res.cookie('token vol management', token,{
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none'
-      })
+      res.cookie('token', token, cookie_option)
       .send({success:true})
     })
 
     app.post('/logout', async(req, res)=>{
       const user = req.body;
       console.log('logging out', user)
-      res.clearCookie('token vol management', {maxAge:0})
+      res.clearCookie('token', {...cookie_option,maxAge:0})
       .send({success:true})
     })
     
@@ -95,6 +97,15 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
       }
+
+    })
+
+    app.get('/posts/:category', async(req, res)=>{
+      const x = req.params.category;
+      var query = { category: x }
+      const cursor = collection.find(query);
+      const result = await cursor.toArray();
+      res.send(result)
 
     })
 
@@ -168,13 +179,17 @@ async function run() {
       
     })
 
-    app.delete('/post/:id', async(req, res)=>{
+    app.delete('/post/:id/:postId', async(req, res)=>{
       const id = req.params.id;
+      const pId = req.params.postId;
+
       console.log("going to delete the ", id);
       const objectId = new ObjectId(id);
 
       const query = {_id:objectId}
       const result = await collection2.deleteOne(query);
+
+      collection.updateOne({_id: new ObjectId(pId)},   { $inc: { noOfVol: 1} })
       res.send(result);
     })
 
